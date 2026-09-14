@@ -49,6 +49,7 @@
 		"deploy": "npm run build && wrangler deploy",
 		"dev": "vite",
 		"lint": "eslint .",
+		"ops": "npm run lint && npm test && npm run build",
 		"preview": "npm run build && vite preview",
 		"test": "vitest run"
 	},

@@ -9,10 +9,24 @@
 	"compatibility_date": "2025-10-08",
 	"assets": {
 		"directory": "./dist",
-		"not_found_handling": "single-page-application"
+		"not_found_handling": "single-page-application",
+		"run_worker_first": [
+			"/api/*",
+			"/ws",
+			"/health",
+			"/mcp",
+			"/webhooks",
+			"/webhooks/*",
+			"/mailhooks",
+			"/.well-known/mcp.json"
+		]
 	},
 	"observability": {
 		"enabled": true
+	},
+	"vars": {
+		"SERVICE_NAME": "cloudflare-workers-templates",
+		"SERVICE_VERSION": "1.1.0"
 	},
 	/**
 	 * Workflows
@@ -36,6 +50,10 @@
 			{
 				"name": "WORKFLOW_STATUS",
 				"class_name": "WorkflowStatusDO"
+			},
+			{
+				"name": "INBOX",
+				"class_name": "InboxDO"
 			}
 		]
 	},
@@ -47,6 +65,10 @@
 		{
 			"tag": "v1",
 			"new_sqlite_classes": ["WorkflowStatusDO"]
+		},
+		{
+			"tag": "v2",
+			"new_sqlite_classes": ["InboxDO"]
 		}
 	],
 	"upload_source_maps": true
