@@ -1,0 +1,9 @@
+title = "cloudflare-workers-templates"
+[allowlist]
+description = "Scanner source, generated types, and synthetic test fixtures"
+paths = [
+  '''test/.*''',
+  '''worker/lib/secrets\.ts''',
+  '''worker-configuration\.d\.ts''',
+  '''\.github/workflows/.*''',
+]

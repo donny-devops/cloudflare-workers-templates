@@ -3,6 +3,7 @@ import { WorkflowDiagram } from "./components/WorkflowDiagram";
 import { CodeDisplay } from "./components/CodeDisplay";
 import { BackgroundDots } from "./components/BackgroundDots";
 import { useWorkflowWebSocket } from "./hooks/useWorkflowWebSocket";
+import { OpsStatusBar } from "./components/OpsStatusBar";
 import { WORKFLOW_STEPS } from "./types";
 
 function App() {
@@ -80,14 +81,17 @@ function App() {
 						</h1>
 					</div>
 
-					<a
-						href="https://developers.cloudflare.com/workflows"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
-					>
-						Documentation →
-					</a>
+					<div className="flex items-center gap-3">
+						<OpsStatusBar />
+						<a
+							href="https://developers.cloudflare.com/workflows"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
+						>
+							Documentation →
+						</a>
+					</div>
 				</div>
 			</header>
 

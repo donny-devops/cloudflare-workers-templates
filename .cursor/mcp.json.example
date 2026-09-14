@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "cloudflare-workers-ops": {
+      "url": "http://localhost:5173/mcp"
+    }
+  }
+}

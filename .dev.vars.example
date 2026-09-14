@@ -1,0 +1,5 @@
+# Local Worker secrets
+# Copy to `.dev.vars` and replace the placeholders. Never commit real values.
+
+WEBHOOK_SECRET=replace-with-a-long-random-value
+MAILHOOK_TOKEN=replace-with-a-long-random-value
