@@ -57,7 +57,7 @@ function App() {
 			</div>
 
 			{/* Minimal Integrated Header */}
-			<header className="px-6 pt-6 pb-4 relative z-10">
+			<header className="px-6 pt-6 pb-4 relative z-20">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
 						<svg
@@ -79,10 +79,10 @@ function App() {
 						<h1 className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
 							Workflows Starter Template
 						</h1>
+						<OpsStatusBar />
 					</div>
 
 					<div className="flex items-center gap-3">
-						<OpsStatusBar />
 						<a
 							href="https://developers.cloudflare.com/workflows"
 							target="_blank"

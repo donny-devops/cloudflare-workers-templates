@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type HealthState = "loading" | "ok" | "degraded" | "error";
 
@@ -20,6 +20,7 @@ export function OpsStatusBar() {
 	const [health, setHealth] = useState<HealthState>("loading");
 	const [open, setOpen] = useState(false);
 	const [status, setStatus] = useState<StatusSnapshot | null>(null);
+	const rootRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -52,6 +53,24 @@ export function OpsStatusBar() {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (!open) {
+			return;
+		}
+
+		const onPointerDown = (event: MouseEvent) => {
+			if (!(event.target instanceof Node)) {
+				return;
+			}
+			if (!rootRef.current?.contains(event.target)) {
+				setOpen(false);
+			}
+		};
+
+		document.addEventListener("mousedown", onPointerDown);
+		return () => document.removeEventListener("mousedown", onPointerDown);
+	}, [open]);
+
 	const label =
 		health === "ok"
 			? "ops ok"
@@ -71,7 +90,7 @@ export function OpsStatusBar() {
 					: "text-red-700 dark:text-red-400";
 
 	return (
-		<div className="relative">
+		<div className="relative" ref={rootRef}>
 			<button
 				type="button"
 				onClick={() => setOpen((value) => !value)}
@@ -93,7 +112,7 @@ export function OpsStatusBar() {
 				{label}
 			</button>
 			{open && (
-				<div className="absolute right-0 mt-2 w-64 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-3 text-xs text-neutral-600 dark:text-neutral-300 shadow-float z-20">
+				<div className="absolute left-0 top-full mt-2 w-64 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-3 text-xs text-neutral-600 dark:text-neutral-300 shadow-float z-30">
 					<p className="font-medium text-neutral-800 dark:text-neutral-100">
 						Operability
 					</p>
@@ -112,10 +131,6 @@ export function OpsStatusBar() {
 							{status?.inbox?.secretFindings ?? 0}
 						</li>
 					</ul>
-					<p className="mt-2 text-[11px] text-neutral-500">
-						Health, webhooks, mailhooks, secret scanning, and MCP live at
-						/health, /webhooks/:source, /mailhooks, and /mcp.
-					</p>
 				</div>
 			)}
 		</div>
