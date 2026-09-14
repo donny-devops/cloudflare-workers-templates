@@ -1,6 +1,20 @@
-// Export the Workflow and Durable Object classes
+import {
+	instanceIdFromPath,
+	isNotFoundError,
+	parseApprovalPayload,
+	parseInstanceIdParam,
+} from "./validation";
+
 export { MyWorkflow } from "./workflow";
 export { WorkflowStatusDO } from "./durable-object";
+
+function json(data: unknown, status = 200, headers?: HeadersInit): Response {
+	return Response.json(data, { status, headers });
+}
+
+function methodNotAllowed(allow: string): Response {
+	return json({ error: "Method not allowed" }, 405, { Allow: allow });
+}
 
 /**
  * Main Worker fetch handler
@@ -15,8 +29,11 @@ export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
 		const url = new URL(request.url);
 
-		// API: Start a new workflow instance
-		if (url.pathname === "/api/workflow/start" && request.method === "POST") {
+		if (url.pathname === "/api/workflow/start") {
+			if (request.method !== "POST") {
+				return methodNotAllowed("POST");
+			}
+
 			try {
 				const instance = await env.MY_WORKFLOW.create({
 					params: {
@@ -24,82 +41,91 @@ export default {
 					},
 				});
 
-				return Response.json({
+				return json({
 					instanceId: instance.id,
 					message: "Workflow started successfully",
 				});
 			} catch {
-				return Response.json(
-					{ error: "Failed to start workflow" },
-					{ status: 500 },
-				);
+				return json({ error: "Failed to start workflow" }, 500);
 			}
 		}
 
-		// API: Get workflow status
 		if (url.pathname.startsWith("/api/workflow/status/")) {
-			const instanceId = url.pathname.split("/").pop();
+			if (request.method !== "GET") {
+				return methodNotAllowed("GET");
+			}
+
+			const instanceId = instanceIdFromPath(
+				url.pathname,
+				"/api/workflow/status/",
+			);
 			if (!instanceId) {
-				return Response.json(
-					{ error: "Instance ID required" },
-					{ status: 400 },
-				);
+				return json({ error: "Valid instance ID required" }, 400);
 			}
 
 			try {
 				const instance = await env.MY_WORKFLOW.get(instanceId);
 				const status = await instance.status();
-				return Response.json(status);
-			} catch {
-				return Response.json(
-					{ error: "Failed to get workflow status" },
-					{ status: 500 },
-				);
+				return json(status);
+			} catch (error) {
+				if (isNotFoundError(error)) {
+					return json({ error: "Workflow instance not found" }, 404);
+				}
+				return json({ error: "Failed to get workflow status" }, 500);
 			}
 		}
 
-		// API: Send event to workflow instance
-		if (
-			url.pathname.startsWith("/api/workflow/event/") &&
-			request.method === "POST"
-		) {
-			const instanceId = url.pathname.split("/").pop();
+		if (url.pathname.startsWith("/api/workflow/event/")) {
+			if (request.method !== "POST") {
+				return methodNotAllowed("POST");
+			}
+
+			const instanceId = instanceIdFromPath(
+				url.pathname,
+				"/api/workflow/event/",
+			);
 			if (!instanceId) {
-				return Response.json(
-					{ error: "Instance ID required" },
-					{ status: 400 },
-				);
+				return json({ error: "Valid instance ID required" }, 400);
+			}
+
+			let body: unknown;
+			try {
+				body = await request.json();
+			} catch {
+				return json({ error: "Invalid JSON body" }, 400);
+			}
+
+			const payload = parseApprovalPayload(body);
+			if ("error" in payload) {
+				return json({ error: payload.error }, 400);
 			}
 
 			try {
-				const body = (await request.json()) as {
-					approved: boolean;
-					comment?: string;
-				};
 				const instance = await env.MY_WORKFLOW.get(instanceId);
 
 				await instance.sendEvent({
 					type: "user-approval",
-					payload: body,
+					payload,
 				});
 
-				return Response.json({
+				return json({
 					success: true,
 					message: "Event sent successfully",
 				});
-			} catch {
-				return Response.json(
-					{ error: "Failed to send event" },
-					{ status: 500 },
-				);
+			} catch (error) {
+				if (isNotFoundError(error)) {
+					return json({ error: "Workflow instance not found" }, 404);
+				}
+				return json({ error: "Failed to send event" }, 500);
 			}
 		}
 
-		// WebSocket: Connect to workflow status updates
 		if (url.pathname === "/ws") {
-			const instanceId = url.searchParams.get("instanceId");
+			const instanceId = parseInstanceIdParam(
+				url.searchParams.get("instanceId"),
+			);
 			if (!instanceId) {
-				return new Response("instanceId query parameter required", {
+				return new Response("Valid instanceId query parameter required", {
 					status: 400,
 				});
 			}
@@ -120,6 +146,6 @@ export default {
 			}
 		}
 
-		return Response.json({ error: "Not Found" }, { status: 404 });
+		return json({ error: "Not Found" }, 404);
 	},
 } satisfies ExportedHandler<Env>;

@@ -22,6 +22,8 @@ const initialState: WorkflowState = {
 	wsConnected: false,
 };
 
+const MAX_RECONNECT_ATTEMPTS = 8;
+
 function workflowReducer(state: WorkflowState, action: Action): WorkflowState {
 	switch (action.type) {
 		case "CONNECTED":
@@ -55,38 +57,61 @@ export function useWorkflowWebSocket(instanceId: string | null): WorkflowState {
 			return;
 		}
 
-		// Determine WebSocket protocol based on current location
-		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-		const wsUrl = `${protocol}//${window.location.host}/ws?instanceId=${instanceId}`;
+		let cancelled = false;
+		let ws: WebSocket | null = null;
+		let retries = 0;
+		let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 
-		const ws = new WebSocket(wsUrl);
-
-		ws.onopen = () => {
-			dispatch({ type: "CONNECTED" });
-		};
-
-		ws.onclose = () => {
-			dispatch({ type: "DISCONNECTED" });
-		};
-
-		ws.onerror = () => {
-			// Connection errors handled by onclose
-		};
-
-		ws.onmessage = (event) => {
-			try {
-				const data = JSON.parse(event.data);
-
-				if (data.type === "workflow_update") {
-					dispatch({ type: "UPDATE", payload: data });
-				}
-			} catch {
-				// Ignore malformed messages
+		const connect = () => {
+			if (cancelled) {
+				return;
 			}
+
+			const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+			const wsUrl = `${protocol}//${window.location.host}/ws?instanceId=${encodeURIComponent(instanceId)}`;
+			ws = new WebSocket(wsUrl);
+
+			ws.onopen = () => {
+				retries = 0;
+				dispatch({ type: "CONNECTED" });
+			};
+
+			ws.onclose = () => {
+				dispatch({ type: "DISCONNECTED" });
+				if (cancelled || retries >= MAX_RECONNECT_ATTEMPTS) {
+					return;
+				}
+
+				const delay = Math.min(1000 * 2 ** retries, 10_000);
+				retries += 1;
+				reconnectTimer = setTimeout(connect, delay);
+			};
+
+			ws.onerror = () => {
+				// Connection errors are handled by onclose.
+			};
+
+			ws.onmessage = (event) => {
+				try {
+					const data = JSON.parse(event.data) as WorkflowUpdateMessage;
+
+					if (data.type === "workflow_update") {
+						dispatch({ type: "UPDATE", payload: data });
+					}
+				} catch {
+					// Ignore malformed messages
+				}
+			};
 		};
+
+		connect();
 
 		return () => {
-			ws.close();
+			cancelled = true;
+			if (reconnectTimer) {
+				clearTimeout(reconnectTimer);
+			}
+			ws?.close();
 		};
 	}, [instanceId]);
 

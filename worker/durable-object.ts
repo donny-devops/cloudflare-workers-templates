@@ -75,6 +75,11 @@ export class WorkflowStatusDO extends DurableObject {
 			this.currentStep = stepName;
 		}
 
+		if (status === "error") {
+			this.workflowStatus = "error";
+			this.currentStep = stepName;
+		}
+
 		const allCompleted = Array.from(this.stepStatuses.values()).every(
 			(s) => s === "completed",
 		);
