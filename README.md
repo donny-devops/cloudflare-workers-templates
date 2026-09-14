@@ -67,9 +67,9 @@ curl -sS -X POST "http://localhost:5173/webhooks/github" \
   --data "$BODY"
 ```
 
-Inbound Cloudflare Email Routing messages are accepted by the Worker `email` handler and stored as redacted mailhook events.
+Inbound HTTP mailhooks are accepted at `POST /mailhooks` with a bearer token. Email Routing is an optional follow-up and is not part of this production worker.
 
-The inbox Durable Object is the event database. It stores metadata and redacted previews only. Matching credential patterns are counted, never persisted in raw form.
+The inbox reuses the existing `WorkflowStatusDO` sqlite class (`idFromName("global")`) as the event database. It stores metadata and redacted previews only. Matching credential patterns are counted, never persisted in raw form.
 
 ## MCP tools
 
@@ -91,4 +91,3 @@ See [`SECURITY.md`](SECURITY.md). CI runs lint/tests, Gitleaks, npm audit, and d
 - [Cloudflare Workflows Documentation](https://developers.cloudflare.com/workflows)
 - [Durable Objects Documentation](https://developers.cloudflare.com/durable-objects)
 - [Workers Documentation](https://developers.cloudflare.com/workers)
-- [Email Workers](https://developers.cloudflare.com/email-routing/email-workers/)

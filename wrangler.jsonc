@@ -53,7 +53,7 @@
 			},
 			{
 				"name": "INBOX",
-				"class_name": "InboxDO"
+				"class_name": "WorkflowStatusDO"
 			}
 		]
 	},
@@ -65,10 +65,6 @@
 		{
 			"tag": "v1",
 			"new_sqlite_classes": ["WorkflowStatusDO"]
-		},
-		{
-			"tag": "v2",
-			"new_sqlite_classes": ["InboxDO"]
 		}
 	],
 	"upload_source_maps": true

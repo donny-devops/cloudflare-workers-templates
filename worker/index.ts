@@ -1,11 +1,10 @@
 export { MyWorkflow } from "./workflow";
 export { WorkflowStatusDO } from "./durable-object";
-export { InboxDO } from "./inbox";
 
 import type { WorkerEnv } from "./bindings";
 import { withSecurityHeaders } from "./lib/headers";
 import { json } from "./lib/json";
-import { handleInboundEmail, handleRequest } from "./routes";
+import { handleRequest } from "./routes";
 
 /**
  * Operability-aware Worker:
@@ -35,12 +34,5 @@ export default {
 				requestId,
 			);
 		}
-	},
-
-	async email(
-		message: ForwardableEmailMessage,
-		env: WorkerEnv,
-	): Promise<void> {
-		await handleInboundEmail(message, env);
 	},
 } satisfies ExportedHandler<WorkerEnv>;

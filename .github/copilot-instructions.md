@@ -4,7 +4,7 @@ This is a Cloudflare Workflows starter with a production-minded operability laye
 
 - health and status APIs
 - HMAC-signed webhooks
-- HTTP and Email Routing mailhooks
+- HTTP mailhooks (`POST /mailhooks`)
 - in-memory secret scanning with redacted Durable Object storage
 - MCP JSON-RPC tools for agents
 - CI, Gitleaks, dependency review, and Dependabot
