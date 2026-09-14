@@ -99,7 +99,8 @@ export function CodeDisplay({
 	// Find the line range for the current step
 	const currentStepDef = WORKFLOW_STEPS.find((s) => s.name === currentStep);
 	const highlightRange = currentStepDef?.lineRange;
-	const isIdle = workflowStatus === "idle" && !isStarting;
+	const canStart =
+		(workflowStatus === "idle" || workflowStatus === "error") && !isStarting;
 
 	return (
 		<div className="h-full overflow-auto p-4">
@@ -117,10 +118,10 @@ export function CodeDisplay({
 						</span>
 					</div>
 					<button
-						onClick={isIdle ? onStartWorkflow : undefined}
-						disabled={!isIdle}
+						onClick={canStart ? onStartWorkflow : undefined}
+						disabled={!canStart}
 						className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${
-							isIdle
+							canStart
 								? "bg-neutral-900 dark:bg-neutral-800 text-white hover:bg-neutral-700 cursor-pointer"
 								: "bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 cursor-not-allowed"
 						}`}

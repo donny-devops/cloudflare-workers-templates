@@ -40,7 +40,11 @@ function App() {
 				throw new Error("Failed to start workflow");
 			}
 
-			const data = await response.json();
+			const data = (await response.json()) as { instanceId?: unknown };
+			if (typeof data.instanceId !== "string" || data.instanceId.length === 0) {
+				throw new Error("Invalid start response");
+			}
+
 			setInstanceId(data.instanceId);
 		} catch {
 			alert("Failed to start workflow. Please try again.");
@@ -90,6 +94,15 @@ function App() {
 					</a>
 				</div>
 			</header>
+
+			{workflowState.workflowStatus === "error" && (
+				<div
+					role="alert"
+					className="relative z-10 mx-6 mb-2 rounded-lg border border-red-300/70 bg-red-50/90 px-4 py-2 text-sm text-red-800 dark:border-red-500/40 dark:bg-red-950/60 dark:text-red-200"
+				>
+					Workflow failed. Start again to retry.
+				</div>
+			)}
 
 			{/* Main content - unified canvas */}
 			<main className="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">

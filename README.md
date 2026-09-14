@@ -1,6 +1,6 @@
 # Cloudflare Workflows Starter Template
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/workflows-starter-template)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/donny-devops/cloudflare-workers-templates)
 
 <!-- dash-content-start -->
 
@@ -8,7 +8,7 @@ A real-time, interactive demonstration of [Cloudflare Workflows](https://develop
 
 <!-- dash-content-end -->
 
-![Cloudflare Workflows Starter Template](assets/template-screenshot.png)
+![Cloudflare Workflows Starter Template](https://imagedelivery.net/wSMYJvS3Xw-n339CbDyDIA/4380d39a-b907-437c-e784-500fcc10cb00/preview)
 
 ## Getting Started
 
@@ -26,11 +26,26 @@ npm run dev
 
 Visit `http://localhost:5173` to see the interactive demo.
 
+### Test and lint
+
+```bash
+npm test
+npm run lint
+```
+
 ### Deployment
 
 ```bash
 npm run deploy
 ```
+
+## Demo notes
+
+This starter is a learning demo, not a production control plane:
+
+- Workflow start, status, event, and WebSocket routes are unauthenticated.
+- Treat instance IDs as capabilities; do not expose the Worker publicly without auth.
+- Approval timeouts and other workflow failures now surface as an error state in the UI so you can start again.
 
 ## Learn More
 

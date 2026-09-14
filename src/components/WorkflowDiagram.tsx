@@ -32,6 +32,7 @@ export function WorkflowDiagram({
 }: WorkflowDiagramProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [containerWidth, setContainerWidth] = useState(400);
+	const [approvalError, setApprovalError] = useState<string | null>(null);
 
 	// Measure container width and update on resize
 	useEffect(() => {
@@ -49,17 +50,24 @@ export function WorkflowDiagram({
 	const handleApprove = async (approved: boolean) => {
 		if (!instanceId) return;
 
+		setApprovalError(null);
 		try {
-			await fetch(`/api/workflow/event/${instanceId}`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					approved,
-					comment: approved ? "Approved via UI" : "Rejected via UI",
-				}),
-			});
+			const response = await fetch(
+				`/api/workflow/event/${encodeURIComponent(instanceId)}`,
+				{
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						approved,
+						comment: approved ? "Approved via UI" : "Rejected via UI",
+					}),
+				},
+			);
+			if (!response.ok) {
+				setApprovalError("Could not send approval. Try again.");
+			}
 		} catch {
-			// Silently fail - workflow will timeout if event not received
+			setApprovalError("Could not send approval. Try again.");
 		}
 	};
 
@@ -185,7 +193,9 @@ export function WorkflowDiagram({
 				{/* Nodes */}
 				{nodes.map((node) => {
 					if (node.type === "start") {
-						const canClick = workflowStatus === "idle" && !isStarting;
+						const canClick =
+							(workflowStatus === "idle" || workflowStatus === "error") &&
+							!isStarting;
 
 						return (
 							<div
@@ -255,9 +265,11 @@ export function WorkflowDiagram({
 										? "bg-blue-500/5 dark:bg-blue-500/10 ring-blue-400/40 dark:ring-blue-500/40"
 										: status === "waiting"
 											? "bg-yellow-500/5 dark:bg-yellow-500/10 ring-yellow-400/40 dark:ring-yellow-500/40"
-											: status === "completed"
-												? "bg-white/60 dark:bg-neutral-900/60 ring-green-400/30 dark:ring-green-500/30"
-												: "bg-white/60 dark:bg-neutral-900/60 ring-black/5 dark:ring-white/10"
+											: status === "error"
+												? "bg-red-500/5 dark:bg-red-500/10 ring-red-400/40 dark:ring-red-500/40"
+												: status === "completed"
+													? "bg-white/60 dark:bg-neutral-900/60 ring-green-400/30 dark:ring-green-500/30"
+													: "bg-white/60 dark:bg-neutral-900/60 ring-black/5 dark:ring-white/10"
 								}`}
 							>
 								<div className="flex items-center gap-2">
@@ -270,7 +282,9 @@ export function WorkflowDiagram({
 													? "bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400"
 													: status === "running"
 														? "bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
-														: "bg-neutral-500/10 dark:bg-neutral-500/20 text-neutral-600 dark:text-neutral-300"
+														: status === "error"
+															? "bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400"
+															: "bg-neutral-500/10 dark:bg-neutral-500/20 text-neutral-600 dark:text-neutral-300"
 										}`}
 									>
 										{status === "completed" ? (
@@ -319,6 +333,20 @@ export function WorkflowDiagram({
 													className="opacity-75"
 													fill="currentColor"
 													d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+												/>
+											</svg>
+										) : status === "error" ? (
+											<svg
+												className="w-3.5 h-3.5"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M6 18L18 6M6 6l12 12"
 												/>
 											</svg>
 										) : (
@@ -375,6 +403,11 @@ export function WorkflowDiagram({
 									>
 										Approve
 									</button>
+									{approvalError ? (
+										<p className="mt-2 text-center text-xs text-red-600 dark:text-red-400">
+											{approvalError}
+										</p>
+									) : null}
 								</div>
 							);
 						}
