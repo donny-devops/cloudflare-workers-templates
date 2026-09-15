@@ -1,0 +1,11 @@
+.git
+.github
+.wrangler
+dist
+node_modules
+coverage
+.env*
+!.env.example
+*.md
+npm-debug.log*
+**/*.tsbuildinfo
