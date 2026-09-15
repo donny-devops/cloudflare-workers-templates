@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Cloudflare Workflows Documentation
+    url: https://developers.cloudflare.com/workflows/
+    about: Official Cloudflare Workflows documentation
+  - name: 💬 Cloudflare Discord
+    url: https://discord.cloudflare.com
+    about: Ask questions and get help from the Cloudflare community

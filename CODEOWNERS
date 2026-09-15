@@ -1,0 +1,20 @@
+# CODEOWNERS
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @donny-devops
+
+# Cloudflare Worker backend
+/worker/ @donny-devops
+
+# React frontend
+/src/ @donny-devops
+
+# CI/CD and infrastructure
+/.github/ @donny-devops
+/Dockerfile @donny-devops
+/wrangler.jsonc @donny-devops
+
+# Security-sensitive files
+/SECURITY.md @donny-devops
+/.gitleaks.toml @donny-devops
