@@ -1,0 +1,12 @@
+node_modules
+dist
+.wrangler
+.git
+.github
+.vscode
+.idea
+.DS_Store
+*.log
+.env*
+.dev.vars*
+.gitleaks.toml
