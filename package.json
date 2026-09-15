@@ -55,5 +55,8 @@
 		"preview": "npm run build && vite preview",
 		"test": "vitest run"
 	},
-	"type": "module"
+	"type": "module",
+	"overrides": {
+		"sharp": "0.35.4"
+	}
 }
