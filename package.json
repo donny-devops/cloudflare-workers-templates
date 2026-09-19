@@ -22,7 +22,7 @@
 	},
 	"devDependencies": {
 		"@cloudflare/vite-plugin": "1.52.1",
-		"@cloudflare/vitest-pool-workers": "0.21.3",
+		"@cloudflare/vitest-pool-workers": "0.22.0",
 		"@eslint/js": "9.39.1",
 		"@tailwindcss/vite": "4.1.17",
 		"@types/react": "19.2.7",
