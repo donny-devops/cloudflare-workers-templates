@@ -1,5 +1,6 @@
 {
 	"name": "cloudflare-workers-templates",
+	"version": "0.1.0",
 	"description": "Interactive starter template demonstrating Cloudflare Workflows with real-time status updates",
 	"cloudflare": {
 		"label": "Workflows Starter",

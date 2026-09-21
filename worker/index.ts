@@ -146,6 +146,21 @@ export default {
 			}
 		}
 
+		if (url.pathname === "/health") {
+			return json({
+				status: "healthy",
+				service: "cloudflare-workers-templates",
+				timestamp: new Date().toISOString(),
+			});
+		}
+
 		return json({ error: "Not Found" }, 404);
+	},
+	async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+		// Example scheduled job — runs on the cron defined in wrangler.jsonc.
+		// Replace with real periodic work (e.g. nightly reconciliation, cleanup).
+		await env.MY_WORKFLOW.create({
+			params: { timestamp: Date.now() },
+		});
 	},
 } satisfies ExportedHandler<Env>;

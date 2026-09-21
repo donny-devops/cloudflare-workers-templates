@@ -49,5 +49,10 @@
 			"new_sqlite_classes": ["WorkflowStatusDO"]
 		}
 	],
+		"triggers": {
+		"crons": [
+			"0 0 * * *"
+		]
+	},
 	"upload_source_maps": true
 }
