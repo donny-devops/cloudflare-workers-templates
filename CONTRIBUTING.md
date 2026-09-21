@@ -45,7 +45,7 @@ npm install
 npm run dev          # Start Vite dev server with Cloudflare plugin
 ```
 
-Visit `http://localhost:5173` to see the app.
+Visit `http://localhost:5173` to see the app. Worker routes (including `GET /health`) are served by the same Vite + Wrangler plugin stack.
 
 ### Running Tests
 
@@ -64,12 +64,12 @@ npx tsc --noEmit     # Type check without emitting
 │   ├── components/       # React components
 │   └── hooks/            # Custom React hooks
 ├── worker/               # Cloudflare Worker backend
-│   ├── index.ts          # API routes and request handling
+│   ├── index.ts          # fetch routes (/health, /api/workflow/*, /ws) + scheduled()
 │   ├── workflow.ts       # Workflow definition
 │   ├── durable-object.ts # Durable Object for WebSocket state
 │   └── validation.ts     # Input validation
 ├── test/                 # Vitest test files
-├── wrangler.jsonc        # Wrangler configuration
+├── wrangler.jsonc        # Wrangler configuration (workflows, DOs, daily cron)
 └── vite.config.ts        # Vite configuration
 ```
 
@@ -79,6 +79,8 @@ npx tsc --noEmit     # Type check without emitting
 - **Testing** — Add or update tests for any logic changes. Run `npm test` before submitting.
 - **No secrets** — Never commit API keys, tokens, or credentials. Use `.dev.vars` for local secrets (it's in `.gitignore`).
 - **Security** — Review the [Security Policy](SECURITY.md) before making changes to request handling, authentication, or headers.
+- **Cron** — `scheduled()` currently starts a workflow on `0 0 * * *`. Changes to that handler or `wrangler.jsonc` `triggers.crons` should be documented in the README.
+- **Releases** — Use [Conventional Commits](https://www.conventionalcommits.org/); release-please on `main` cuts versions from `0.1.0`.
 
 ## Submitting a Pull Request
 
