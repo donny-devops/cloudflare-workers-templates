@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `GET /health` JSON endpoint (`status`, `service`, `timestamp`)
+- Worker `scheduled()` handler plus daily cron trigger `0 0 * * *` in `wrangler.jsonc`
+- release-please workflow and `0.1.0` version manifest (`package.json`, `.release-please-manifest.json`)
 - Docker multi-stage build (`Dockerfile`) and `.dockerignore`
 - GitHub Actions workflow for Docker image build and publish to GHCR (`docker-publish.yml`)
 - SLSA provenance attestation for container images

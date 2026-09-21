@@ -4,10 +4,12 @@
 
 We actively maintain and provide security patches for the versions listed below. If you are running an unsupported version, please upgrade to the latest release before reporting an issue.
 
+The package version on `main` is `0.1.0` (release-please starting point). There is no `1.0.x` line yet.
+
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 0.1.x / `main` | :white_check_mark: |
+| < 0.1   | :x:                |
 
 ---
 
@@ -43,6 +45,7 @@ To help us triage and validate your finding quickly, please include:
   * Secrets or API key leakage in template defaults or CI/CD pipelines.
   * Insecure header configurations, permissive CORS policies, or missing authentication middleware in templates.
   * Insecure bindings (KV, D1, R2, Queues, Vectorize) vulnerable to injection or unauthorized access.
+  * Unauthenticated Worker routes (`/api/workflow/*`, `/ws`, `/health`) and the daily cron that starts workflow instances.
 
 * **Out of Scope:**
   * Theoretical attacks without a viable exploit path.
