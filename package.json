@@ -30,7 +30,7 @@
 		"@types/react-dom": "19.2.3",
 		"@vitejs/plugin-react-swc": "4.0.0",
 		"@vitest/runner": "4.1.11",
-		"@vitest/snapshot": "4.1.11",
+		"@vitest/snapshot": "5.0.1",
 		"eslint": "9.39.2",
 		"eslint-plugin-react-hooks": "7.0.1",
 		"eslint-plugin-react-refresh": "0.4.24",
